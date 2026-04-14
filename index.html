@@ -24,13 +24,25 @@
         }
 
         /* A+med 淡淡浮水印 */
-        body::before {
-            content: "A+med";
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 15vmin; color: rgba(255, 255, 255, 0.02);
-            white-space: nowrap; pointer-events: none; z-index: 0;
-        }
+       body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;  /* 寬度擴大以覆蓋旋轉後的空隙 */
+    height: 200%; /* 高度擴大 */
+    
+    /* 建立一個小格子的背景圖，裡面寫文字 */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ctext x='50%25' y='50%25' font-size='30' fill='rgba(255, 255, 255, 0.03)' font-family='Arial' text-anchor='middle' dominant-baseline='middle' transform='rotate(-30, 100, 100)'%3EA+med%3C/text%3E%3C/svg%3E");
+    
+    /* 讓背景不斷重複 */
+    background-repeat: repeat;
+    
+    /* 將整個背景向上向左偏移，確保覆蓋 */
+    transform: translate(-25%, -25%);
+    pointer-events: none;
+    z-index: 0;
+}
 
         #app {
             width: 100%; max-width: 1080px; height: 100%;
