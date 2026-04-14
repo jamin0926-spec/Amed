@@ -81,13 +81,17 @@
             box-shadow: inset 0 0 20px rgba(0, 210, 255, 0.1);
         }
 
-        .square-btn:active { 
-            transform: scale(0.95); 
-            background: rgba(255, 165, 0, 0.2); /* 橘色透明背景 */
-            border-color: #ff8c00; /* 橘色邊框 */
-            box-shadow: 0 0 20px #ff8c00; /* 橘色外發光 */
+        .square-btn:active, 
+        .square-btn:focus,
+        .list-btn:active, .list-btn:focus,
+        .back-btn:active, .back-btn:focus {
+            transform: scale(0.96);
+            border-color: #ff8c00 !important;
+            box-shadow: 0 0 20px #ff8c00 !important;
+            background: rgba(255, 140, 0, 0.3) !important;
+            transition: 0.1s;
+            outline: none; /* 去除手機預設的醜醜框 */
         }
-
         /* 第二層：列表按鈕 */
         .list-grid { width: 100%; display: flex; flex-direction: column; gap: 1.8vh; align-items: center; }
         .list-btn {
@@ -240,6 +244,19 @@
             imgTag.style.display = 'none';
         }
     }
+
+    // 這段代碼會強迫手機瀏覽器在使用者點擊時，重新計算按鈕狀態
+document.addEventListener("touchstart", function() {}, true);
+
+// 另外，我們讓按鈕在點擊後自動失去焦點，防止「發光特效卡住」的情況
+document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // 點擊後 0.1 秒自動放開，這樣特效才會閃一下就消失，不會一直亮著
+        setTimeout(() => {
+            this.blur(); 
+        }, 100);
+    });
+});
 </script>
 
 </body>
