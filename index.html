@@ -9,120 +9,107 @@
             --bg-color: #020b1a;
             --primary-glow: #00d2ff;
             --btn-border: rgba(0, 210, 255, 0.5);
-            --btn-bg: rgba(0, 210, 255, 0.1);
+            --btn-bg: rgba(0, 210, 255, 0.15);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* 這裡改用相對單位，讓它適應各種螢幕 */
         body, html {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background-color: var(--bg-color);
             color: #fff;
             font-family: "Microsoft JhengHei", sans-serif;
-            overflow: hidden; /* 防止出現捲軸 */
-            display: flex;
-            justify-content: center;
+            overflow: hidden;
+            display: flex; justify-content: center;
         }
 
-        /* 浮水印：使用 vmin 確保在不同尺寸下字體大小適中 */
+        /* 浮水印設計 */
         body::before {
             content: "A+med";
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 20vmin; 
-            color: rgba(255, 255, 255, 0.03);
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 0;
+            font-size: 18vmin; color: rgba(255, 255, 255, 0.03);
+            white-space: nowrap; pointer-events: none; z-index: 0;
         }
 
         #app {
-            width: 100%;
-            max-width: 1080px; /* 限制最大寬度，避免在超寬螢幕上太扁 */
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 10vh 5vw; /* 使用視窗百分比作為邊距 */
-            position: relative;
-            z-index: 1;
+            width: 100%; max-width: 1080px; height: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 5vh 5vw; position: relative; z-index: 1;
         }
 
-        header { text-align: center; margin-bottom: 8vh; }
+        header { text-align: center; margin-bottom: 2vh; flex-shrink: 0; }
         header h1 {
-            font-size: 8vh; /* 字體隨螢幕高度縮放 */
+            font-size: 7vh;
             background: linear-gradient(to bottom, #fff, #00d2ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
         }
-        .subtitle { font-size: 2.5vh; color: #88a; }
 
-        /* 按鈕容器：使用彈性佈局 */
-        .btn-grid {
+        /* 第一層：正方形按鈕佈局 */
+        .square-grid {
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 3vh;
+            flex-grow: 1;
+            display: flex; flex-direction: column;
+            justify-content: space-evenly;
             align-items: center;
+            padding-bottom: 5vh;
         }
 
-        .sci-btn {
-            width: 90%;
-            min-height: 10vh; /* 高度隨螢幕縮放 */
-            padding: 2vh;
+        .square-btn {
+            width: 42vh; aspect-ratio: 1 / 1;
             background: var(--btn-bg);
-            border: 2px solid var(--btn-border);
-            border-radius: 20px;
-            color: #fff;
-            font-size: 4vh; /* 文字大小自動調整 */
-            font-weight: bold;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 3px solid var(--btn-border);
+            border-radius: 30px;
+            color: #fff; font-size: 6vh; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.1);
         }
 
-        .sci-btn:active {
-            transform: scale(0.98);
-            background: rgba(0, 210, 255, 0.3);
-            box-shadow: 0 0 30px var(--primary-glow);
+        .square-btn:active { transform: scale(0.95); background: rgba(0, 210, 255, 0.3); }
+
+        /* 第二層：清單按鈕 */
+        .list-grid { width: 100%; display: flex; flex-direction: column; gap: 2vh; align-items: center; }
+        .list-btn {
+            width: 90%; min-height: 9vh;
+            background: var(--btn-bg); border: 2px solid var(--btn-border);
+            border-radius: 15px; color: #fff; font-size: 3.2vh;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
 
-        /* 內容層次控制 */
-        .layer { display: none; width: 100%; }
+        .layer { display: none; width: 100%; height: 100%; }
         .layer.active { display: flex; flex-direction: column; align-items: center; }
 
-        /* 解答頁面：內容框高度也改用相對單位 */
+        /* 第三層：內容展示區 */
         .content-box {
-            width: 100%;
-            height: 55vh;
+            width: 100%; height: 65vh;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 4vh;
-            margin-top: 2vh;
-            font-size: 3vh;
-            line-height: 1.6;
-            overflow-y: auto; /* 若內容太多可內部分別捲動 */
+            border-radius: 25px; padding: 3vh;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            display: flex; flex-direction: column;
         }
 
+        .detail-image {
+            width: 100%;
+            max-height: 35vh; /* 圖片最高佔 35% 螢幕高度 */
+            object-fit: contain; /* 保持比例不變形 */
+            border-radius: 15px;
+            margin-bottom: 3vh;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--btn-border);
+            display: none; /* 預設隱藏，有網址才顯示 */
+        }
+
+        .detail-text { font-size: 2.8vh; line-height: 1.6; color: #ddd; }
+
         .back-btn {
-            margin-top: 5vh;
-            width: 60%;
-            height: 8vh;
-            background: #222;
-            border: 1px solid #444;
-            border-radius: 40px;
-            color: #aaa;
-            font-size: 3vh;
+            margin-top: auto; margin-bottom: 2vh;
+            width: 60%; height: 8vh; flex-shrink: 0;
+            background: #111; border: 1px solid #444;
+            border-radius: 50px; color: #aaa; font-size: 2.5vh;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -130,57 +117,58 @@
 
 <div id="app">
     <div id="layer1" class="layer active">
-        <header>
-            <h1>A+med</h1>
-            <p class="subtitle">智能科技醫療導覽系統</p>
-        </header>
-        <div class="btn-grid">
-            <button class="sci-btn" onclick="goLayer(2, 'dressing')">敷 料</button>
-            <button class="sci-btn" onclick="goLayer(2, 'medicine')">藥 品</button>
-            <button class="sci-btn" onclick="goLayer(2, 'device')">醫 材</button>
+        <header><h1>A+med</h1></header>
+        <div class="square-grid">
+            <button class="square-btn" onclick="goLayer(2, 'dressing')">敷 料</button>
+            <button class="square-btn" onclick="goLayer(2, 'medicine')">藥 品</button>
+            <button class="square-btn" onclick="goLayer(2, 'device')">醫 材</button>
         </div>
     </div>
 
     <div id="layer2" class="layer">
-        <h1 id="category-title" style="font-size: 6vh; margin-bottom: 5vh; text-align: center;">分類標題</h1>
-        <div class="btn-grid" id="sub-menu-container"></div>
+        <h1 id="category-title" style="font-size: 6vh; margin: 3vh 0;"></h1>
+        <div class="list-grid" id="sub-menu-container"></div>
         <button class="back-btn" onclick="goLayer(1)">◀ 返回主選單</button>
     </div>
 
     <div id="layer3" class="layer">
-        <h1 id="detail-title" style="font-size: 5vh; color: var(--primary-glow); text-align: center;">標題</h1>
-        <div class="content-box" id="detail-content"></div>
+        <h1 id="detail-title" style="font-size: 4vh; color: var(--primary-glow); margin: 3vh 0; text-align: center;"></h1>
+        <div class="content-box">
+            <img id="detail-img" class="detail-image" src="" alt="產品展示">
+            <div id="detail-text" class="detail-text"></div>
+        </div>
         <button class="back-btn" onclick="goLayer(2)">◀ 返回列表</button>
     </div>
 </div>
 
 <script>
-    // 資料結構與前一版相同
     const data = {
         dressing: {
             title: "敷料系列",
             items: [
-                { name: "葡聚醣的秘密", info: "這裡填寫關於葡聚醣的秘密詳細介紹..." },
-                { name: "術後傷口好夥伴", info: "專業術後護理敷料，提供最佳癒合環境。" },
-                { name: "還我好肌膚", info: "針對皮膚修復的進階方案說明。" },
-                { name: "赫麗敷保護你的咖投呼", info: "專門針對膝蓋(咖投呼)關節設計的彈性敷料。" },
-                { name: "惱人痔瘡別再來", info: "術後舒適護理與舒緩建議內容。" }
+                { name: "葡聚醣的秘密", img: "圖片連結貼在這裡", info: "這裡填寫詳細介紹文字..." },
+                { name: "術後傷口好夥伴", img: "圖片連結貼在這裡", info: "這裡填寫詳細介紹文字..." },
+                { name: "還我好肌膚", img: "圖片連結貼在這裡", info: "這裡填寫詳細介紹文字..." },
+                { name: "赫麗敷保護你的咖投呼", img: "圖片連結貼在這裡", info: "這裡填寫詳細介紹文字..." },
+                { name: "惱人痔瘡別再來", img: "https://jamin0926-spec.github.io/Amed/A4.png", info: "【痔瘡傷口照護】西海 痔瘡傷口保護敷料(未滅菌)幫助肛裂 痔瘡 產後痔瘡 患者 用的安全、坐的舒適形成保護膜、有效幫助傷口癒合捷克 IOMCH 研究開發的專利產品魚雷型白色塞劑 (2g/個)  10個/盒" }
             ]
         },
         medicine: {
             title: "藥品系列",
             items: [
-                { name: "藥品選項 1", info: "內容 1" }, { name: "藥品選項 2", info: "內容 2" },
-                { name: "藥品選項 3", info: "內容 3" }, { name: "藥品選項 4", info: "內容 4" },
-                { name: "藥品選項 5", info: "內容 5" }
+                { name: "1", img: "", info: "藥品 1 內容說明" },
+                { name: "2", img: "", info: "藥品 2 內容說明" },
+                { name: "3", img: "", info: "藥品 3 內容說明" },
+                { name: "4", img: "", info: "藥品 4 內容說明" },
+                { name: "5", img: "", info: "藥品 5 內容說明" }
             ]
         },
         device: {
             title: "醫材系列",
             items: [
-                { name: "醫材選項 1", info: "內容 1" },
-                { name: "醫材選項 2", info: "內容 2" },
-                { name: "醫材選項 3", info: "內容 3" }
+                { name: "1", img: "", info: "醫材 1 內容說明" },
+                { name: "2", img: "", info: "醫材 2 內容說明" },
+                { name: "3", img: "", info: "醫材 3 內容說明" }
             ]
         }
     };
@@ -194,23 +182,32 @@
             document.getElementById('category-title').innerText = categoryData.title;
             const container = document.getElementById('sub-menu-container');
             container.innerHTML = '';
+            
             categoryData.items.forEach(item => {
                 const btn = document.createElement('button');
-                btn.className = 'sci-btn';
-                btn.style.minHeight = '8vh';
-                btn.style.fontSize = '3vh';
+                btn.className = 'list-btn';
                 btn.innerText = item.name;
-                btn.onclick = () => showDetail(item.name, item.info);
+                btn.onclick = () => showDetail(item.name, item.info, item.img);
                 container.appendChild(btn);
             });
         }
     }
 
-    function showDetail(title, content) {
+    function showDetail(title, info, imgSrc) {
         document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
         document.getElementById('layer3').classList.add('active');
         document.getElementById('detail-title').innerText = title;
-        document.getElementById('detail-content').innerHTML = content;
+        document.getElementById('detail-text').innerHTML = info;
+
+        const imgTag = document.getElementById('detail-img');
+        // 判斷有無圖片網址，有才顯示
+        if (imgSrc && imgSrc.trim() !== "") {
+            imgTag.src = imgSrc;
+            imgTag.style.display = 'block';
+        } else {
+            imgTag.src = "";
+            imgTag.style.display = 'none';
+        }
     }
 </script>
 
