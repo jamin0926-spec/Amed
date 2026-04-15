@@ -8,9 +8,8 @@
         :root {
             --bg-color: #020b1a;
             --primary-glow: #00d2ff;
-            --btn-border: rgba(0, 210, 255, 0.4);
-            --btn-bg: rgba(0, 210, 255, 0.12);
-            --scan-line-color: rgba(0, 210, 255, 0.03);
+            --btn-border: rgba(0, 210, 255, 0.5);
+            --btn-bg: rgba(0, 210, 255, 0.15);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,145 +24,147 @@
             position: relative;
         }
 
-        /* --- 1. 掃描線濾鏡 (Scanline Effect) --- */
+        /* --- 特效層：掃描線與背景 --- */
         body::before {
             content: "";
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(
-                var(--scan-line-color) 50%, 
-                transparent 50%
-            );
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0, 210, 255, 0.03) 50%, transparent 50%);
             background-size: 100% 4px;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0.5;
+            z-index: 100; pointer-events: none;
         }
 
-        /* --- 背景光暈與網格 (保持原樣並微調) --- */
-        .bg-layer {
-            position: absolute; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
+        .bg-elements {
+            position: absolute; width: 100%; height: 100%; z-index: 0; pointer-events: none;
         }
         .glow-sphere {
             position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 30% 30%, rgba(0, 210, 255, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 70%, rgba(112, 0, 255, 0.07) 0%, transparent 40%);
-            animation: rotateBg 40s infinite linear;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 70%, rgba(112, 0, 255, 0.05) 0%, transparent 40%);
+            animation: rotateBg 30s infinite linear;
         }
         .hex-grid {
             position: absolute; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(0, 210, 255, 0.1)' stroke-width='1'/%3E%3C/svg%3E");
-            background-size: 56px 100px;
-            -webkit-mask-image: radial-gradient(circle, black 20%, transparent 80%);
-            mask-image: radial-gradient(circle, black 20%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle, black 30%, transparent 80%);
             opacity: 0.5;
         }
-
         @keyframes rotateBg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* --- 2. 動態陰影呼吸效果 --- */
+        /* --- 按鈕呼吸特效 --- */
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 15px rgba(0, 210, 255, 0.1), inset 0 0 10px rgba(0, 210, 255, 0.05); }
-            50% { box-shadow: 0 0 30px rgba(0, 210, 255, 0.3), inset 0 0 20px rgba(0, 210, 255, 0.1); }
-            100% { box-shadow: 0 0 15px rgba(0, 210, 255, 0.1), inset 0 0 10px rgba(0, 210, 255, 0.05); }
+            0%, 100% { box-shadow: inset 0 0 20px rgba(0, 210, 255, 0.1); }
+            50% { box-shadow: inset 0 0 40px rgba(0, 210, 255, 0.3), 0 0 15px rgba(0, 210, 255, 0.1); }
         }
 
         #app {
             width: 100%; max-width: 1080px; height: 100%;
             display: flex; flex-direction: column; align-items: center;
-            padding: 5vh 5vw; position: relative; z-index: 10;
+            padding: 5vh 5vw; position: relative; z-index: 1;
         }
 
+        header { text-align: center; margin-top: 3vh; margin-bottom: 1vh; flex-shrink: 0; }
         header h1 {
             font-size: 6vh;
-            background: linear-gradient(to bottom, #fff, var(--primary-glow));
+            background: linear-gradient(to bottom, #fff, #00d2ff);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
-            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
         }
 
-        /* --- 3. 平滑轉場動畫相關 CSS --- */
-        .layer {
-            display: none; width: 100%; height: 100%;
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .layer.active {
-            display: flex; flex-direction: column; align-items: center;
-            opacity: 1; transform: translateY(0);
-        }
-
+        /* 完全還原原始按鈕比例 */
         .square-grid {
-            width: 100%; flex-grow: 1; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 3vh;
+            width: 100%; flex-grow: 1;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            gap: 2vh; padding-bottom: 5vh;
         }
 
         .square-btn {
-            width: 22vh; aspect-ratio: 1 / 1;
-            background: var(--btn-bg); border: 2px solid var(--btn-border);
-            border-radius: 30px; color: #fff; font-size: 4.5vh; font-weight: bold;
+            width: 20vh; aspect-ratio: 1 / 1;
+            background: var(--btn-bg); max-width: 80vw;
+            border: 2px solid var(--btn-border); border-radius: 25px;
+            color: #fff; font-size: 4.5vh; font-weight: bold;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             animation: pulseGlow 4s infinite ease-in-out;
             transition: 0.3s;
         }
 
-        .square-btn:active { transform: scale(0.92); border-color: #ff8c00; box-shadow: 0 0 30px #ff8c00 !important; }
-
-        .list-btn {
-            width: 90%; min-height: 8vh; background: var(--btn-bg);
-            border: 1px solid var(--btn-border); border-radius: 12px;
-            color: #fff; font-size: 2.8vh; font-weight: bold; cursor: pointer;
-            margin-bottom: 1.5vh; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px); transition: 0.2s;
+        .square-btn:active, .list-btn:active, .back-btn:active {
+            transform: scale(0.96); border-color: #ff8c00 !important;
+            box-shadow: 0 0 20px #ff8c00 !important;
+            background: rgba(255, 140, 0, 0.3) !important;
+            transition: 0.1s;
         }
 
-        .list-btn:active { transform: scale(0.96); border-color: #ff8c00; }
+        /* 恢復原始列表按鈕設定 */
+        .list-grid { width: 100%; display: flex; flex-direction: column; gap: 1.8vh; align-items: center; }
+        .list-btn {
+            width: 90%; min-height: 8vh;
+            background: var(--btn-bg); border: 1px solid var(--btn-border);
+            border-radius: 12px; color: #fff; font-size: 2.8vh;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            padding: 0 20px;
+        }
 
-        /* --- 4. 載入狀態 (Skeleton Screen) --- */
-        .image-container {
+        /* 層級與切換動畫 */
+        .layer { 
+            display: none; width: 100%; height: 100%; 
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .layer.active { display: flex; flex-direction: column; align-items: center; opacity: 1; transform: translateY(0); }
+
+        /* 恢復原始內容展示設定 */
+        .content-box {
+            width: 100%; height: 60vh;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px; padding: 3vh;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 圖片容器與載入動畫 */
+        .img-wrapper {
             width: 100%; max-height: 28vh; margin-bottom: 2.5vh;
-            position: relative; border-radius: 10px; overflow: hidden;
-            display: none; border: 1px solid var(--btn-border);
+            position: relative; overflow: hidden; display: none;
+            border: 1px solid var(--btn-border); border-radius: 10px;
         }
         .skeleton {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(0,210,255,0.1), transparent);
-            background-size: 200% 100%;
-            animation: skeletonLoading 1.5s infinite;
+            background-size: 200% 100%; animation: loading 1.5s infinite;
         }
-        @keyframes skeletonLoading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        @keyframes loading { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+        .detail-image {
+            width: 100%; max-height: 28vh; object-fit: contain;
+            opacity: 0; transition: opacity 0.5s ease;
         }
 
-        .content-box {
-            width: 100%; height: 60vh; background: rgba(0, 20, 40, 0.65);
-            border-radius: 20px; padding: 3vh; border: 1px solid rgba(0, 210, 255, 0.3);
-            overflow-y: auto; backdrop-filter: blur(15px);
-        }
-
-        .detail-image { width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.5s ease; }
+        .detail-text { font-size: 2.6vh; line-height: 1.6; color: #ddd; }
 
         .back-btn {
-            margin-top: auto; margin-bottom: 3vh; width: 60%; height: 7vh;
-            background: rgba(255, 255, 255, 0.05); border: 1px solid #444;
+            margin-top: auto; margin-bottom: 3vh;
+            width: 50%; height: 7vh; flex-shrink: 0;
+            background: #111; border: 1px solid #444;
             border-radius: 40px; color: #aaa; font-size: 2.2vh; cursor: pointer;
         }
-        .home-btn { border: 1px solid var(--primary-glow) !important; color: var(--primary-glow) !important; }
+        .home-btn {
+            border: 1px solid var(--primary-glow) !important;
+            color: var(--primary-glow) !important;
+            background: rgba(0, 210, 255, 0.05) !important;
+        }
     </style>
 </head>
 <body>
 
-<div class="bg-layer">
+<div class="bg-elements">
     <div class="glow-sphere"></div>
     <div class="hex-grid"></div>
 </div>
 
 <div id="app">
-    <div id="layer1" class="layer active">
+    <div id="layer1" class="layer active" style="opacity:1; transform:translateY(0);">
         <header><h1>A+med</h1></header>
         <div class="square-grid">
             <button class="square-btn" onclick="goLayer(2, 'dressing')">敷 料</button>
@@ -173,19 +174,19 @@
     </div>
 
     <div id="layer2" class="layer">
-        <h1 id="category-title" style="font-size: 5vh; margin: 3vh 0; color: var(--primary-glow); text-shadow: 0 0 15px var(--primary-glow);"></h1>
+        <h1 id="category-title" style="font-size: 5vh; margin: 3vh 0; color: var(--primary-glow);"></h1>
         <div class="list-grid" id="sub-menu-container"></div>
         <button class="back-btn" onclick="goLayer(1)">◀ 返回主選單</button>
     </div>
 
     <div id="layer3" class="layer">
-        <h1 id="detail-title" style="font-size: 3.5vh; margin: 2vh 0; text-align: center; color: #fff;"></h1>
+        <h1 id="detail-title" style="font-size: 3.5vh; margin: 2vh 0; text-align: center;"></h1>
         <div class="content-box">
-            <div id="img-wrapper" class="image-container">
-                <div class="skeleton"></div>
+            <div id="img-container" class="img-wrapper">
+                <div class="skeleton" id="skeleton"></div>
                 <img id="detail-img" class="detail-image" src="" alt="產品圖" loading="lazy">
             </div>
-            <div id="detail-text" style="font-size: 2.4vh; line-height: 1.8; color: #ddd; text-align: justify;"></div>
+            <div id="detail-text" class="detail-text"></div>
         </div>
         <button class="back-btn home-btn" onclick="goLayer(1)"> ⟲ 返回首頁</button>
     </div>
@@ -196,53 +197,43 @@
         dressing: {
             title: "敷料系列",
             items: [
-                { name: "葡聚醣的秘密", img: "https://jamin0926-spec.github.io/Amed/A1.png", info: "<strong>醫療專用敷料 | 液態噴霧式敷料</strong><br><br>活性成分可維持傷口濕潤幫助癒合，適用於各種不規則形狀、大小。" },
-                { name: "術後傷口好夥伴", img: "https://jamin0926-spec.github.io/Amed/A2.png", info: "<strong>防水透氣 | 方便使用 | 舒適服貼</strong><br><br>獨家三層複合式結構內層A+高分子水凝膠，滲液吸收能力佳。" },
-                { name: "惱人痔瘡別再來", img: "https://jamin0926-spec.github.io/Amed/A4.png", info: "<strong>痔瘡傷口保護敷料</strong><br><br>形成保護膜、有效幫助傷口癒合，用的安全、坐的舒適。" }
+                { name: "葡聚醣的秘密", img: "https://jamin0926-spec.github.io/Amed/A1.png", info: "醫療專用敷料|液態噴霧式敷料|主動式敷料|活性成分，濕潤傷口幫助癒合，適用於各種不規則形狀、大小、或無法使用黏貼型敷料的傷口照護" },
+                { name: "術後傷口好夥伴", img: "https://jamin0926-spec.github.io/Amed/A2.png", info: "防水透氣 | 方便使用 |舒適服貼 獨家三層複合式結構內層A+高分子水凝膠，滲液吸收能力佳，維持傷口濕潤均衡狀態，加速傷口癒合。多款尺寸，符合手術傷口類別" },
+                { name: "還我好肌膚", img: "p3.jpg", info: "這裡填寫皮膚修復的資訊..." },
+                { name: "赫麗敷保護你的咖投呼", img: "p4.jpg", info: "膝蓋關節護理產品說明..." },
+                { name: "惱人痔瘡別再來", img: "https://jamin0926-spec.github.io/Amed/A4.png", info: "西海 痔瘡傷口保護敷料，幫助肛裂、痔瘡、產後痔瘡患者，用的安全、坐的舒適，形成保護膜、有效幫助傷口癒合" }
             ]
         },
-        medicine: { title: "藥品系列", items: [{ name: "專業止痛系列", img: "", info: "有效緩解各類急慢性疼痛。" }] },
-        device: { title: "醫材系列", items: [{ name: "電子血壓計", img: "", info: "精準測量數據。" }] }
+        medicine: { title: "藥品系列", items: [{ name: "藥品 1", img: "m1.jpg", info: "藥品 1 說明" }] },
+        device: { title: "醫材系列", items: [{ name: "醫材 1", img: "d1.jpg", info: "醫材 1 說明" }] }
     };
 
     function goLayer(layerNum, category = '') {
         const layers = document.querySelectorAll('.layer');
-        
-        // 轉場優化：先淡出
         layers.forEach(l => {
+            l.classList.remove('active');
             l.style.opacity = '0';
-            l.style.transform = 'translateY(10px)';
         });
 
         setTimeout(() => {
-            layers.forEach(l => l.classList.remove('active'));
             const target = document.getElementById('layer' + layerNum);
             target.classList.add('active');
-            
-            // 再淡入
-            setTimeout(() => {
-                target.style.opacity = '1';
-                target.style.transform = 'translateY(0)';
-            }, 50);
+            setTimeout(() => target.style.opacity = '1', 50);
 
             if (layerNum === 2 && category) {
-                renderList(category);
+                const categoryData = data[category];
+                document.getElementById('category-title').innerText = categoryData.title;
+                const container = document.getElementById('sub-menu-container');
+                container.innerHTML = '';
+                categoryData.items.forEach(item => {
+                    const btn = document.createElement('button');
+                    btn.className = 'list-btn';
+                    btn.innerText = item.name;
+                    btn.onclick = () => showDetail(item.name, item.info, item.img);
+                    container.appendChild(btn);
+                });
             }
         }, 300);
-    }
-
-    function renderList(category) {
-        const categoryData = data[category];
-        document.getElementById('category-title').innerText = categoryData.title;
-        const container = document.getElementById('sub-menu-container');
-        container.innerHTML = '';
-        categoryData.items.forEach(item => {
-            const btn = document.createElement('button');
-            btn.className = 'list-btn';
-            btn.innerText = item.name;
-            btn.onclick = () => showDetail(item.name, item.info, item.img);
-            container.appendChild(btn);
-        });
     }
 
     function showDetail(title, info, imgSrc) {
@@ -250,20 +241,18 @@
         document.getElementById('detail-title').innerText = title;
         document.getElementById('detail-text').innerHTML = info;
 
-        const wrapper = document.getElementById('img-wrapper');
+        const wrapper = document.getElementById('img-container');
         const imgTag = document.getElementById('detail-img');
-        
+        const skeleton = document.getElementById('skeleton');
+
         if (imgSrc && imgSrc.startsWith('http')) {
             wrapper.style.display = 'block';
-            imgTag.style.opacity = '0'; // 先隱藏圖片
+            skeleton.style.display = 'block';
+            imgTag.style.opacity = '0';
             imgTag.src = imgSrc;
-            
-            // 圖片載入完成後的動作
             imgTag.onload = () => {
                 imgTag.style.opacity = '1';
-                // 隱藏 Skeleton
-                const skeleton = wrapper.querySelector('.skeleton');
-                if(skeleton) skeleton.style.display = 'none';
+                skeleton.style.display = 'none';
             };
         } else {
             wrapper.style.display = 'none';
@@ -271,9 +260,8 @@
         document.querySelector('.content-box').scrollTop = 0;
     }
 
-    // 點擊後自動失去焦點以修復發光卡住
     document.addEventListener('click', e => {
-        if (e.target.tagName === 'BUTTON') setTimeout(() => e.target.blur(), 150);
+        if (e.target.tagName === 'BUTTON') setTimeout(() => e.target.blur(), 100);
     }, true);
     document.addEventListener("touchstart", () => {}, {passive: true});
 </script>
