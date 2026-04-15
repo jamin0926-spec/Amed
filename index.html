@@ -10,7 +10,6 @@
             --primary-glow: #00d2ff;
             --btn-border: rgba(0, 210, 255, 0.4);
             --btn-bg: rgba(0, 210, 255, 0.12);
-            --grid-color: rgba(0, 210, 255, 0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,32 +24,35 @@
             position: relative;
         }
 
-        /* --- 科技感背景層 1：動態光暈 --- */
+        /* --- 科技感背景層 1：旋轉光暈 --- */
         body::before {
             content: "";
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
             background: 
-                radial-gradient(circle at 30% 30%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 70% 70%, rgba(112, 0, 255, 0.05) 0%, transparent 40%);
-            animation: rotateBg 25s infinite linear;
-            z-index: -2;
+                radial-gradient(circle at 30% 30%, rgba(0, 210, 255, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(112, 0, 255, 0.08) 0%, transparent 40%);
+            animation: rotateBg 30s infinite linear;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        /* --- 科技感背景層 2：六角形分子網格 --- */
+        /* --- 科技感背景層 2：六角形網格 --- */
         body::after {
             content: "";
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(0, 210, 255, 0.1)' stroke-width='1'/%3E%3C/svg%3E");
+            /* 使用 RGBA 顏色避免特殊字元解析錯誤 */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(0, 210, 255, 0.15)' stroke-width='1'/%3E%3C/svg%3E");
             background-size: 56px 100px;
-            /* 讓中間清楚，四周漸隱，產生景深感 */
-            mask-image: radial-gradient(circle, black 30%, transparent 90%);
-            -webkit-mask-image: radial-gradient(circle, black 30%, transparent 90%);
-            z-index: -1;
-            opacity: 0.6;
+            /* 修正遮罩：增加前綴並調整語法 */
+            -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 80%);
+            mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 80%);
+            z-index: 1;
+            opacity: 0.7;
+            pointer-events: none;
         }
 
         @keyframes rotateBg {
@@ -61,7 +63,9 @@
         #app {
             width: 100%; max-width: 1080px; height: 100%;
             display: flex; flex-direction: column; align-items: center;
-            padding: 5vh 5vw; position: relative; z-index: 10;
+            padding: 5vh 5vw; 
+            position: relative; 
+            z-index: 10; /* 確保內容在背景之上 */
         }
 
         header { text-align: center; margin-top: 3vh; margin-bottom: 1vh; flex-shrink: 0; }
@@ -70,9 +74,10 @@
             background: linear-gradient(to bottom, #fff, var(--primary-glow));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
+        /* 第一層：正方形按鈕 */
         .square-grid {
             width: 100%; flex-grow: 1;
             display: flex; flex-direction: column;
@@ -89,7 +94,8 @@
             cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.1), inset 0 0 15px rgba(0, 210, 255, 0.1);
-            backdrop-filter: blur(5px); /* 毛玻璃效果增加高級感 */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .square-btn:active {
@@ -99,6 +105,7 @@
             background: rgba(255, 140, 0, 0.3);
         }
 
+        /* 第二層：列表按鈕 */
         .list-grid { width: 100%; display: flex; flex-direction: column; gap: 1.8vh; align-items: center; }
         .list-btn {
             width: 90%; min-height: 8vh;
@@ -106,6 +113,7 @@
             border-radius: 12px; color: #fff; font-size: 2.8vh;
             font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .list-btn:active {
@@ -118,13 +126,15 @@
         .layer { display: none; width: 100%; height: 100%; }
         .layer.active { display: flex; flex-direction: column; align-items: center; }
 
+        /* 第三層：內容展示 */
         .content-box {
             width: 100%; height: 60vh;
-            background: rgba(0, 20, 40, 0.6);
+            background: rgba(0, 20, 40, 0.65);
             border-radius: 20px; padding: 3vh;
-            border: 1px solid rgba(0, 210, 255, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.3);
             overflow-y: auto;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
 
         .detail-image {
@@ -144,15 +154,16 @@
 
         .back-btn {
             margin-top: auto; margin-bottom: 3vh;
-            width: 50%; height: 7vh; flex-shrink: 0;
+            width: 60%; height: 7vh; flex-shrink: 0;
             background: rgba(255, 255, 255, 0.05); border: 1px solid #444;
             border-radius: 40px; color: #aaa; font-size: 2.2vh;
-            cursor: pointer;
+            cursor: pointer; transition: 0.2s;
         }
 
         .home-btn {
             border: 1px solid var(--primary-glow) !important;
             color: var(--primary-glow) !important;
+            background: rgba(0, 210, 255, 0.05) !important;
         }
     </style>
 </head>
@@ -199,23 +210,25 @@
         medicine: {
             title: "藥品系列",
             items: [
-                { name: "專業止痛系列", img: "", info: "有效緩解各類急慢性疼痛。" },
-                { name: "呼吸道護理", img: "", info: "針對過敏與呼吸道不適之處方藥品。" }
+                { name: "專業止痛系列", img: "", info: "藥品說明與使用方式..." },
+                { name: "呼吸道護理", img: "", info: "針對處方之藥品資訊..." }
             ]
         },
         device: {
             title: "醫材系列",
             items: [
-                { name: "電子血壓計", img: "", info: "精準測量，雲端紀錄健康數據。" },
-                { name: "血糖追蹤儀", img: "", info: "低痛採血，即時掌握血糖波動。" }
+                { name: "電子血壓計", img: "", info: "醫療級測量準確度..." },
+                { name: "血糖追蹤儀", img: "", info: "即時掌握健康數據..." }
             ]
         }
     };
 
     function goLayer(layerNum, category = '') {
+        // 切換圖層顯示
         document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
         document.getElementById('layer' + layerNum).classList.add('active');
 
+        // 如果是進入第二層，動態生成按鈕
         if (layerNum === 2 && category) {
             const categoryData = data[category];
             document.getElementById('category-title').innerText = categoryData.title;
@@ -238,21 +251,26 @@
         document.getElementById('detail-text').innerHTML = info;
 
         const imgTag = document.getElementById('detail-img');
-        // 檢查是否為有效圖片連結
+        // 只有當 imgSrc 是正確的 http 連結時才顯示圖片
         if (imgSrc && imgSrc.startsWith('http')) {
             imgTag.src = imgSrc;
             imgTag.style.display = 'block';
         } else {
             imgTag.style.display = 'none';
         }
+        
+        // 切換回頁面頂部
+        document.querySelector('.content-box').scrollTop = 0;
     }
 
-    // 觸控優化：點擊按鈕後自動取消焦點，避免發光狀態卡住
+    // 觸控與按鈕優化
     document.addEventListener('click', function(e) {
         if (e.target.tagName === 'BUTTON') {
             setTimeout(() => e.target.blur(), 150);
         }
     }, true);
+    
+    // 支援手機觸控反應
     document.addEventListener("touchstart", function() {}, {passive: true});
 </script>
 
