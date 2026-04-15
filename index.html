@@ -8,8 +8,9 @@
         :root {
             --bg-color: #020b1a;
             --primary-glow: #00d2ff;
-            --btn-border: rgba(0, 210, 255, 0.5);
-            --btn-bg: rgba(0, 210, 255, 0.15);
+            --btn-border: rgba(0, 210, 255, 0.4);
+            --btn-bg: rgba(0, 210, 255, 0.12);
+            --grid-color: rgba(0, 210, 255, 0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,103 +22,109 @@
             font-family: "Microsoft JhengHei", sans-serif;
             overflow: hidden;
             display: flex; justify-content: center;
+            position: relative;
         }
 
-        /* A+med 淡淡浮水印 */
-       body::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200%;  /* 寬度擴大以覆蓋旋轉後的空隙 */
-    height: 200%; /* 高度擴大 */
-    
-    /* 建立一個小格子的背景圖，裡面寫文字 */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ctext x='50%25' y='50%25' font-size='30' fill='rgba(255, 255, 255, 0.03)' font-family='Arial' text-anchor='middle' dominant-baseline='middle' transform='rotate(-30, 100, 100)'%3EA+med%3C/text%3E%3C/svg%3E");
-    
-    /* 讓背景不斷重複 */
-    background-repeat: repeat;
-    
-    /* 將整個背景向上向左偏移，確保覆蓋 */
-    transform: translate(-25%, -25%);
-    pointer-events: none;
-    z-index: 0;
-}
+        /* --- 科技感背景層 1：動態光暈 --- */
+        body::before {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(112, 0, 255, 0.05) 0%, transparent 40%);
+            animation: rotateBg 25s infinite linear;
+            z-index: -2;
+        }
+
+        /* --- 科技感背景層 2：六角形分子網格 --- */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(0, 210, 255, 0.1)' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 56px 100px;
+            /* 讓中間清楚，四周漸隱，產生景深感 */
+            mask-image: radial-gradient(circle, black 30%, transparent 90%);
+            -webkit-mask-image: radial-gradient(circle, black 30%, transparent 90%);
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
         #app {
             width: 100%; max-width: 1080px; height: 100%;
             display: flex; flex-direction: column; align-items: center;
-            padding: 5vh 5vw; position: relative; z-index: 1;
+            padding: 5vh 5vw; position: relative; z-index: 10;
         }
 
         header { text-align: center; margin-top: 3vh; margin-bottom: 1vh; flex-shrink: 0; }
         header h1 {
             font-size: 6vh;
-            background: linear-gradient(to bottom, #fff, #00d2ff);
+            background: linear-gradient(to bottom, #fff, var(--primary-glow));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+            letter-spacing: 2px;
         }
 
-        /* 第一層：正方形按鈕佈局 */
         .square-grid {
-            width: 100%;
-            flex-grow: 1;
+            width: 100%; flex-grow: 1;
             display: flex; flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 2vh;
-            padding-bottom: 5vh;
+            justify-content: center; align-items: center;
+            gap: 3vh; padding-bottom: 5vh;
         }
 
         .square-btn {
-            width: 20vh; aspect-ratio: 1 / 1;
+            width: 22vh; aspect-ratio: 1 / 1;
             background: var(--btn-bg);
-            max-width: 80vw;
             border: 2px solid var(--btn-border);
-            border-radius: 25px;
+            border-radius: 30px;
             color: #fff; font-size: 4.5vh; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 20px rgba(0, 210, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.1), inset 0 0 15px rgba(0, 210, 255, 0.1);
+            backdrop-filter: blur(5px); /* 毛玻璃效果增加高級感 */
         }
 
-        .square-btn:active, 
-        .square-btn:focus,
-        .list-btn:active, .list-btn:focus,
-        .back-btn:active, .back-btn:focus {
-            transform: scale(0.96);
-            border-color: #ff8c00 !important;
-            box-shadow: 0 0 20px #ff8c00 !important;
-            background: rgba(255, 140, 0, 0.3) !important;
-            transition: 0.1s;
-            outline: none; /* 去除手機預設的醜醜框 */
+        .square-btn:active {
+            transform: scale(0.92);
+            border-color: #ff8c00;
+            box-shadow: 0 0 30px #ff8c00;
+            background: rgba(255, 140, 0, 0.3);
         }
-        /* 第二層：列表按鈕 */
+
         .list-grid { width: 100%; display: flex; flex-direction: column; gap: 1.8vh; align-items: center; }
         .list-btn {
             width: 90%; min-height: 8vh;
             background: var(--btn-bg); border: 1px solid var(--btn-border);
             border-radius: 12px; color: #fff; font-size: 2.8vh;
             font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            padding: 0 20px;
+            backdrop-filter: blur(5px);
         }
-        .list-btn:active { 
-            transform: scale(0.98); 
-            background: rgba(255, 165, 0, 0.2); 
-            border-color: #ff8c00; 
-            box-shadow: 0 0 15px #ff8c00; 
+
+        .list-btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 140, 0, 0.2);
+            border-color: #ff8c00;
+            box-shadow: 0 0 20px #ff8c00;
         }
 
         .layer { display: none; width: 100%; height: 100%; }
         .layer.active { display: flex; flex-direction: column; align-items: center; }
 
-        /* 第三層：內容展示區 */
         .content-box {
             width: 100%; height: 60vh;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 20, 40, 0.6);
             border-radius: 20px; padding: 3vh;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.2);
             overflow-y: auto;
+            backdrop-filter: blur(10px);
         }
 
         .detail-image {
@@ -125,27 +132,27 @@
             object-fit: contain; border-radius: 10px;
             margin-bottom: 2.5vh; display: none;
             border: 1px solid var(--btn-border);
+            animation: fadeIn 0.5s ease;
         }
 
-        .detail-text { font-size: 2.6vh; line-height: 1.6; color: #ddd; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-text { font-size: 2.4vh; line-height: 1.8; color: #ddd; text-align: justify; }
 
         .back-btn {
             margin-top: auto; margin-bottom: 3vh;
             width: 50%; height: 7vh; flex-shrink: 0;
-            background: #111; border: 1px solid #444;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid #444;
             border-radius: 40px; color: #aaa; font-size: 2.2vh;
             cursor: pointer;
         }
-        .back-btn:active { 
-            background: rgba(255, 165, 0, 0.2); 
-            border-color: #ff8c00; 
-            box-shadow: 0 0 15px #ff8c00; 
-            color: #ff8c00;
-        }
+
         .home-btn {
             border: 1px solid var(--primary-glow) !important;
             color: var(--primary-glow) !important;
-            background: rgba(0, 210, 255, 0.05) !important;
         }
     </style>
 </head>
@@ -162,13 +169,13 @@
     </div>
 
     <div id="layer2" class="layer">
-        <h1 id="category-title" style="font-size: 5vh; margin: 3vh 0; color: var(--primary-glow);"></h1>
+        <h1 id="category-title" style="font-size: 5vh; margin: 3vh 0; color: var(--primary-glow); text-shadow: 0 0 15px var(--primary-glow);"></h1>
         <div class="list-grid" id="sub-menu-container"></div>
         <button class="back-btn" onclick="goLayer(1)">◀ 返回主選單</button>
     </div>
 
     <div id="layer3" class="layer">
-        <h1 id="detail-title" style="font-size: 3.5vh; margin: 2vh 0; text-align: center;"></h1>
+        <h1 id="detail-title" style="font-size: 3.5vh; margin: 2vh 0; text-align: center; color: #fff;"></h1>
         <div class="content-box">
             <img id="detail-img" class="detail-image" src="" alt="產品圖">
             <div id="detail-text" class="detail-text"></div>
@@ -182,30 +189,25 @@
         dressing: {
             title: "敷料系列",
             items: [
-                // 注意：這裡的 img 欄位請填入你上傳到 GitHub 的圖片檔名
-                { name: "葡聚醣的秘密", img: "https://jamin0926-spec.github.io/Amed/A1.png", info: "醫療專用敷料|液態噴霧式敷料|主動式敷料|活性成分，濕潤傷口幫助癒合，適用於各種不規則形狀、大小、或無法使用黏貼型敷料的傷口照護" },
-                { name: "術後傷口好夥伴", img: "https://jamin0926-spec.github.io/Amed/A2.png", info: "防水透氣 | 方便使用 |舒適服貼 獨家三層複合式結構內層A+高分子水凝膠，滲液吸收能力佳，維持傷口濕潤均衡狀態，加速傷口癒合。多款尺寸，符合手術傷口類別" },
-                { name: "還我好肌膚", img: "p3.jpg", info: "這裡填寫皮膚修復的資訊..." },
-                { name: "赫麗敷保護你的咖投呼", img: "p4.jpg", info: "膝蓋關節護理產品說明..." },
-                { name: "惱人痔瘡別再來", img: "https://jamin0926-spec.github.io/Amed/A4.png", info: "西海 痔瘡傷口保護敷料，幫助肛裂、痔瘡、產後痔瘡患者，用的安全、坐的舒適，形成保護膜、有效幫助傷口癒合" }
+                { name: "葡聚醣的秘密", img: "https://jamin0926-spec.github.io/Amed/A1.png", info: "<strong>醫療專用敷料 | 液態噴霧式敷料</strong><br><br>活性成分可維持傷口濕潤幫助癒合，適用於各種不規則形狀、大小、或無法使用黏貼型敷料的傷口照護。" },
+                { name: "術後傷口好夥伴", img: "https://jamin0926-spec.github.io/Amed/A2.png", info: "<strong>防水透氣 | 方便使用 | 舒適服貼</strong><br><br>獨家三層複合式結構內層A+高分子水凝膠，滲液吸收能力佳，維持傷口濕潤均衡狀態。多款尺寸，符合各類手術傷口。" },
+                { name: "還我好肌膚", img: "p3.jpg", info: "專業皮膚修復配方，強化表皮屏障，舒緩不適感。" },
+                { name: "赫麗敷保護你的咖投呼", img: "p4.jpg", info: "針對關節部位設計，高伸縮性且服貼，不影響活動。" },
+                { name: "惱人痔瘡別再來", img: "https://jamin0926-spec.github.io/Amed/A4.png", info: "<strong>痔瘡傷口保護敷料</strong><br><br>幫助肛裂、痔瘡、產後痔瘡患者，形成保護膜、有效幫助傷口癒合，用的安全、坐的舒適。" }
             ]
         },
         medicine: {
             title: "藥品系列",
             items: [
-                { name: "1", img: "m1.jpg", info: "藥品 1 說明" },
-                { name: "2", img: "m2.jpg", info: "藥品 2 說明" },
-                { name: "3", img: "m3.jpg", info: "藥品 3 說明" },
-                { name: "4", img: "m4.jpg", info: "藥品 4 說明" },
-                { name: "5", img: "m5.jpg", info: "藥品 5 說明" }
+                { name: "專業止痛系列", img: "", info: "有效緩解各類急慢性疼痛。" },
+                { name: "呼吸道護理", img: "", info: "針對過敏與呼吸道不適之處方藥品。" }
             ]
         },
         device: {
             title: "醫材系列",
             items: [
-                { name: "1", img: "d1.jpg", info: "醫材 1 說明" },
-                { name: "2", img: "d2.jpg", info: "醫材 2 說明" },
-                { name: "3", img: "d3.jpg", info: "醫材 3 說明" }
+                { name: "電子血壓計", img: "", info: "精準測量，雲端紀錄健康數據。" },
+                { name: "血糖追蹤儀", img: "", info: "低痛採血，即時掌握血糖波動。" }
             ]
         }
     };
@@ -236,8 +238,8 @@
         document.getElementById('detail-text').innerHTML = info;
 
         const imgTag = document.getElementById('detail-img');
-        if (imgSrc && imgSrc.trim() !== "") {
-            // 如果你圖片跟 index.html 放在一起，直接用檔名即可抓到圖片
+        // 檢查是否為有效圖片連結
+        if (imgSrc && imgSrc.startsWith('http')) {
             imgTag.src = imgSrc;
             imgTag.style.display = 'block';
         } else {
@@ -245,18 +247,13 @@
         }
     }
 
-    // 這段代碼會強迫手機瀏覽器在使用者點擊時，重新計算按鈕狀態
-document.addEventListener("touchstart", function() {}, true);
-
-// 另外，我們讓按鈕在點擊後自動失去焦點，防止「發光特效卡住」的情況
-document.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', function() {
-        // 點擊後 0.1 秒自動放開，這樣特效才會閃一下就消失，不會一直亮著
-        setTimeout(() => {
-            this.blur(); 
-        }, 100);
-    });
-});
+    // 觸控優化：點擊按鈕後自動取消焦點，避免發光狀態卡住
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+            setTimeout(() => e.target.blur(), 150);
+        }
+    }, true);
+    document.addEventListener("touchstart", function() {}, {passive: true});
 </script>
 
 </body>
